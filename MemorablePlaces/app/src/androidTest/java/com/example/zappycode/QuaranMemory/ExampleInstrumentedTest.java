@@ -1,4 +1,4 @@
-package com.example.zappycode.memorableplaces;
+package com.example.zappycode.QuaranMemory;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

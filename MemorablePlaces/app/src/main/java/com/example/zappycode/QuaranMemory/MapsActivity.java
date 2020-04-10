@@ -1,4 +1,4 @@
-package com.example.zappycode.memorableplaces;
+package com.example.zappycode.QuaranMemory;
 
 import android.Manifest;
 import android.content.Context;
@@ -9,10 +9,10 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
@@ -22,6 +22,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.SaveCallback;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -33,7 +38,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LocationManager locationManager;
     LocationListener locationListener;
     private GoogleMap mMap;
+    ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Food");
 
+    ParseObject request = new ParseObject("Food");
     public void centerMapOnLocation(Location location, String title) {
         if (location != null) {
             LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
@@ -109,7 +116,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Location placeLocation = new Location(LocationManager.GPS_PROVIDER);
             placeLocation.setLatitude(MainActivity.locations.get(intent.getIntExtra("placeNumber",0)).latitude);
             placeLocation.setLongitude(MainActivity.locations.get(intent.getIntExtra("placeNumber",0)).longitude);
+            ParseGeoPoint parseGeoPoint = new ParseGeoPoint(placeLocation.getLatitude(), placeLocation.getLongitude());
+            request.put("location", parseGeoPoint);
+            request.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
 
+
+
+                }
+            });
+
+           // Log.i("location:", String.valueOf(placeLocation));
             centerMapOnLocation(placeLocation, MainActivity.places.get(intent.getIntExtra("placeNumber",0)));
         }
     }
@@ -147,7 +165,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         MainActivity.places.add(address);
         MainActivity.locations.add(latLng);
-
+        //request.put("location", latLng);
         MainActivity.arrayAdapter.notifyDataSetChanged();
 
         Toast.makeText(this,"Location Saved!",Toast.LENGTH_SHORT).show();
